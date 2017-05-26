@@ -13,8 +13,6 @@ from flask import (
 )
 from app import application
 
-#   blueprints
-from search import search
 import configparser
 import ipdb
 
