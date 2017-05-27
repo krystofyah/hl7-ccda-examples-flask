@@ -52,6 +52,14 @@ def get_example_page(permalink_id):
     #   return render_template("orig.html", examples=examples)
     return render_template("example.html", example=example)
 
+@application.route("/examples/download/<permalink_id>", methods=['GET', 'POST'])
+def download_example(permalink_id):
+    example = db.examples.find_one({"Permalink": permalink_id})
+    response = make_response(example['xml']))
+    # This is the key: Set the right header for the response
+    # to be downloaded, instead of just printed on the browser
+    response.headers["Content-Disposition"] = "attachment; filename={}.xml".format(example['name'])
+    return response
 
 import configparser
 

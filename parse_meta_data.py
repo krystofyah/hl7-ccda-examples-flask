@@ -66,11 +66,12 @@ def process_sections(sections):
     return doc
 
 
-def process_readme(section_name, example_name, data):
+def process_readme(section_name, example_name, data, example_xml):
     sections = data.split('##')
     doc = process_sections(sections)
     doc['section'] = section_name
     doc['name'] = example_name
+    doc['xml'] = example_xml
     if 'Permalink' in doc:
         result = db.examples.replace_one({"Permalink": doc['Permalink']}, doc, upsert=True)
         #   ipdb.set_trace()
@@ -110,10 +111,16 @@ def parse(folder):
 
             #   actual example folder
             if filename.lower() == "readme.md" and dirs == []:
+                #   get the xml file for the example
+                xml_filename =  [ _file for _file in files if _file.lower() != "readme.md" ][0]
                 print os.path.join(path,filename)
                 pth = os.path.join(re.sub(folder, '', path), filename)
                 pth = pth.lstrip('/')
                 example_name = path.split(os.path.sep)[-1]
+                example_xml = ''
+                with open(os.path.join(path,xml_filename), 'rU') as xml:
+                    example_xml = xml.read()
+
                 with open(os.path.join(path,filename), 'rU') as readme:
                     data = readme.read()
-                    process_readme(section_name, example_name, data)
+                    process_readme(section_name, example_name, data, example_xml)
