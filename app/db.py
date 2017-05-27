@@ -11,6 +11,7 @@ if os.environ.get("HEROKU"):
     client = MongoClient(uri)
 else:
     database = 'ccdaExamples'
-    client = MongoClient('localhost', 27017)
-
+    database = 'heroku_brpn0kqd'
+    #   client = MongoClient('localhost', 27017)
+    client = MongoClient("mongodb://heroku_brpn0kqd:ji373v99tdvndpb3ccpvhg0sqe@ds155091.mlab.com:55091/heroku_brpn0kqd")
 db = client[database]
