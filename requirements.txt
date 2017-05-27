@@ -20,7 +20,6 @@ itsdangerous==0.24
 Jinja2==2.8
 kombu==3.0.35
 MarkupSafe==0.23
-neo4jrestclient==2.1.1
 passlib==1.6.5
 pathlib2==2.1.0
 pexpect==4.2.0
@@ -35,9 +34,9 @@ pytz==2016.6.1
 PyYAML==3.11
 redis==2.10.5
 requests==2.10.0
-sendgrid==3.1.9
 simplegeneric==0.8.1
 six==1.10.0
 traitlets==4.2.2
 wcwidth==0.1.7
 Werkzeug==0.11.10
+gitdb===2.0.0
