@@ -15,6 +15,9 @@ from app import application
 
 import configparser
 import ipdb
+from pygments import highlight
+from pygments.lexers import XmlLexer, guess_lexer
+from pygments.formatters import HtmlFormatter
 
 
 config = configparser.ConfigParser()
@@ -49,8 +52,12 @@ def get_section_page(section_id):
 @application.route('/examples/view/<permalink_id>', methods=['GET', 'POST'])
 def get_example_page(permalink_id):
     example = db.examples.find_one({"Permalink": permalink_id})
+    lexer = guess_lexer(example['xml'])
+    style = HtmlFormatter(style='friendly').style
+    #   ipdb.set_trace()
+    xml = highlight(example['xml'], lexer, HtmlFormatter(full=True, style='colorful'))
     #   return render_template("orig.html", examples=examples)
-    return render_template("example.html", example=example)
+    return render_template("example.html", example=example, xml=xml)
 
 @application.route("/examples/download/<permalink_id>", methods=['GET', 'POST'])
 def download_example(permalink_id):
