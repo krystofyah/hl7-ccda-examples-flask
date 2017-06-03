@@ -47,7 +47,7 @@
 
               <a href="javascript:history.back()" class="button small" id="search-list-link">return to result list</a>
 
-              <p class="detail-note">Example metadata last updated 2017-01-03 00:00:00 UTC</p>
+              <p class="detail-note">Example metadata last updated {{example['updated_on']}} UTC</p>
 
               <p class="detail-with-list">
                 <strong id="example-status">Approval Status:</strong>
@@ -62,10 +62,17 @@
                 </ul>
               </div>
 
-              <p>
-                  <a id="example-validation" href="{{example['validator']['link']}}">{{example['validator']['name']}}</a>
-              </p>
 
+              <p>
+                {% if example['validator']['link'] %}
+                    <a id="example-validation" href="{{example['validator']['link']}}">{{example['validator']['name']}}</a>
+                {% else %}
+                    No validation URL supplied
+                {% endif %}
+              </p>
+              {% if example['Certification'] not in ['', 'N/A'] %}
+                <p>{{example['Certification']}} Certification</p>
+              {% endif %}
               <p class="detail-with-list">
                 <strong id="example-comments">Comments:</strong>
               </p>
@@ -85,14 +92,19 @@
                 <strong id="example-full">Full sample:</strong>
                  {{example['Reference to full CDA sample']}}
               </p>
-
-              <p>
-                <strong id="example-example">Example:</strong>
-                <a class="button tiny" id="example-download" href="/examples/download/{{example['Permalink']}}">download example</a>
-                <a target='_blank' class="button tiny" id="example-github" href="https://github.com/HL7/C-CDA-Examples/blob/master/{{example['section']}}/{{example['name']}}/{{example['xml_filename']}}">view on GitHub</a>
-              </p>
-
-    {{xml|safe}}
+              {% if not example['example_xml'] %}
+                  <p>
+                    <strong id="example-example">Example:</strong>
+                    no example provided
+                  </p>
+              {% else %}
+                <p>
+                  <strong id="example-example">Example:</strong>
+                  <a class="button tiny" id="example-download" href="/examples/download/{{example['Permalink']}}">download example</a>
+                  <a target='_blank' class="button tiny" id="example-github" href="https://github.com/HL7/C-CDA-Examples/blob/master/{{example['section']}}/{{example['name']}}/{{example['xml_filename']}}">view on GitHub</a>
+                </p>
+                {{xml|safe}}
+              {% endif %}
 
 <ol class="joyride-list" data-joyride>
   <li data-button="Begin Tour" data-text="Next"  data-options="prev_button: false">

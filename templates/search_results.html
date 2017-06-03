@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>HL7 C-CDA Example Search</title>
+    <title>HL7 CDA Example Search</title>
 
     <link rel="stylesheet" media="screen" href="/static/css/hl7.css" />
     <script src="/assets/vendor/modernizr-21c79fdbd5c98d918a40c9fa2ec03aa716322b0a8a56159587b83d66b7fbc8a5.js"></script>
@@ -18,13 +18,13 @@
   <div class="sticky">
   <nav class="top-bar" data-topbar role="navigation">
     <ul class="title-area">
-      <li class="name"><h1><img src="/static/images/HL7-Logo-6a7cb6e141fe06112152b99cfd9c0a9a405b0ecc6eae595a6b5b064737bd38cc.png" alt="Hl7 logo" />HL7 CDA Example Search</h1></li>
+      <li class="name"><h1><img src="/static/images/HL7-Logo-6a7cb6e141fe06112152b99cfd9c0a9a405b0ecc6eae595a6b5b064737bd38cc.png" alt="Hl7 logo" />            HL7 CDA Example Search</h1></li>
       <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
     </ul>
 
     <section class="top-bar-section">
       <ul class="left">
-        <li class="main-title">&nbsp;</li>
+        <li class="main-title">Retrieved Example List</li>
       </ul>
       <ul class="right">
         <li >
@@ -41,35 +41,44 @@
         <div class="large-12 small-12 small-centered columns">
           <p id="notice"></p>
 
-
 {% include "search_form.html" %}
 
+<p class="large-9 columns"  id="query-count"> This section has {{examples.count()}} examples</p>
 
 <p class="return-link large-3 columns" id="main-page-link"><a href="/sections">return to Main Search</a></p>
 
 <table class="listing">
   <thead>
     <tr>
-          <th id="section-list-col">Name</th>
-        </tr>
+      <th id="results-name">Name</th>
+      <th id="results-name">Section</th>
+      <th id="results-status">Status</th>
+      <th id="results-actions"></th>
+    </tr>
   </thead>
 
   <tbody>
     {% for example in examples %}
     <tr>
-        <td>
-          <div class="large-10 small-9 columns">
-            <p class="list-title"><a href="/sections/{{example['_id']}}">{{ example['name'] }}</a></p>
-            <div class="list-detail"><h2>{{ example['description'] | truncate(100) }}</h2>
+          <td>
+            <p class="list-title"><a href="/examples/view/{{example['Permalink']}}">{{example['name']}}</a></p>
+            <div class="list-detail">
+              <ul>
+  <li>{{ example['Comments'] | truncate(100) }}</li>
+  </ul>
+
             </div>
-          </div>
-          <div class="large-2 small-3 columns">
-            <a href="/sections/{{example['_id']}}">
-                <span class="list-link-text">Section examples</span><span class="link-pointer"> }</span>
-              </a>
-          </div>
-        </td>
-      </tr>
+          </td>
+          <td>{{example['section']}}</td>
+          <td>{{example['approval']}}</td>
+          <td>
+            <a href="/examples/view/{{example['Permalink']}}">
+                <span class="list-link-text">Detail</span><span class="link-pointer"></span>
+  </a>          <br/>
+            <a href="/examples/download/{{example['Permalink']}}.xml">
+                <span class="list-link-text">Download</span><span class="link-pointer">d</span>
+  </a>        </td>
+        </tr>
 
       {% endfor %}
 

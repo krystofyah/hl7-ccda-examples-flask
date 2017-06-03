@@ -52,10 +52,13 @@ def get_section_page(section_id):
 @application.route('/examples/view/<permalink_id>', methods=['GET', 'POST'])
 def get_example_page(permalink_id):
     example = db.examples.find_one({"Permalink": permalink_id})
-    lexer = guess_lexer(example['xml'])
-    style = HtmlFormatter(style='friendly').style
-    #   ipdb.set_trace()
-    xml = highlight(example['xml'], lexer, HtmlFormatter(full=True, style='colorful'))
+    if example['xml']:
+        lexer = guess_lexer(example['xml'])
+        style = HtmlFormatter(style='friendly').style
+        #   ipdb.set_trace()
+        xml = highlight(example['xml'], lexer, HtmlFormatter(full=True, style='colorful'))
+    else:
+        xml = None
     #   return render_template("orig.html", examples=examples)
     return render_template("example.html", example=example, xml=xml)
 
@@ -67,6 +70,35 @@ def download_example(permalink_id):
     # to be downloaded, instead of just printed on the browser
     response.headers["Content-Disposition"] = "attachment; filename={}.xml".format(example['name'])
     return response
+
+@application.route('/search', methods=['GET', 'POST'])
+def get_search_results():
+    query = {}
+    #   ipdb.set_trace()
+    params = dict(request.form)
+    import re
+    terms = '.*{}.*'.format(str(params['search_terms'][0]))
+
+    regx = re.compile(terms, re.IGNORECASE)
+    #   ipdb.set_trace()
+
+    if 'search_terms' in params:
+        #query['name'] = {"$regex": '/*.{}*./i'.format(str(params['search_terms'][0]))}
+        query['name'] = {"$regex": regx}
+
+    if 'approval' in params:
+        query['approval'] = params['approval']
+
+    if 'certification' in params and params['certification'] == 1:
+        query['certification'] = ''
+
+    #   ipdb.set_trace()
+
+    examples = db.examples.find(query)
+    print query
+    return render_template("search_results.html", examples=examples)
+
+
 
 import configparser
 

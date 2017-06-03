@@ -42,29 +42,10 @@
           <p id="notice"></p>
 
           <div id="section-title">
-            <h2>{{section['description']}}</h2>
-
+            <h2>{{section['name']}} Section Examples from C-CDA</h2>
+            <p>{{section['description']}}</p>
           </div>
-<form id="search-form" name="searchform" action="/examples" accept-charset="UTF-8" method="get"><input name="utf8" type="hidden" value="&#x2713;" />
-    <fieldset id="search-criteria">
-      <legend>search criteria</legend>
-      <div class="input-float-label small-6 large-6 columns" id="search-by-text">
-        <input type="text" name="search[search_text]" id="search_search_text" value="" placeholder="enter a word or words to search" />
-        <label for="search[search_text]">Search text</label>
-      </div>
-      <fieldset class="large-3 small-4 columns push-buttons" id="search-by-status">
-        <legend>filter by example status</legend>
-        <input type="checkbox" value="app" name="search[status][]" id="search_status_app" /><label for="search_status_app">Approved</label><input type="checkbox" value="wthd" name="search[status][]" id="search_status_wthd" /><label for="search_status_wthd">Withdrawn</label><input type="checkbox" value="pend" name="search[status][]" id="search_status_pend" /><label for="search_status_pend">Pending</label><input type="hidden" name="search[status][]" value="" />
-      </fieldset>
-      <fieldset class="large-1 small-2 columns push-buttons" id="search-by-cert">
-        <input name="search[search_certification]" type="hidden" value="0" /><input type="checkbox" value="1" name="search[search_certification]" id="search_search_certification" />
-        <label for="search_search_certification">Certification</label>
-      </fieldset>
-      <div class="large-1 columns send-search">
-        <input type="submit" value="Search" id="sub-btn" class="button right search-button" />
-      </div>
-    </fieldset>
-</form>
+{% include "search_form.html" %}
 
 <p class="large-9 columns"  id="query-count"> This section has {{examples.count()}} examples</p>
 
@@ -94,10 +75,10 @@
           <td>{{example['approval']}}</td>
           <td>
             <a href="/examples/view/{{example['Permalink']}}">
-                <span class="list-link-text">Detail</span><span class="link-pointer">}</span>
+                <span class="list-link-text">Detail</span><span class="link-pointer"></span>
   </a>          <br/>
             <a href="/examples/download/{{example['Permalink']}}.xml">
-                <span class="list-link-text">Download</span><span class="link-pointer">d</span>
+                <span class="list-link-text">Download</span><span class="link-pointer"></span>
   </a>        </td>
         </tr>
 

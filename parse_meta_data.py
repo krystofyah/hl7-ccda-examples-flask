@@ -1,4 +1,4 @@
-import os, ipdb, re, pandoc
+import os, ipdb, re, pandoc, datetime
 
 folder = '../C-CDA-Examples'
 
@@ -12,13 +12,17 @@ from app.db import db
 
 def get_name(section):
     lines = section.split("\n\n")
+    nme = lines[0].strip()
+    if nme.startswith("Comment"):
+        ipdb.set_trace()
     name = lines[0].strip()
     try:
         colon = name.index(':')
         name = name[:colon]
     except:
         pass
-    return name
+
+    return name.split("\n")[0]
 
 
 def process_section(doc, name, section):
@@ -33,14 +37,26 @@ def process_section(doc, name, section):
         name = name.replace(".", ' ')
 
         #   update Permalink field to just be the id, otherwise list of bulleted items
-        isStr = name in ['Permalink', 'Comments', 'Custodian', 'Reference to full CDA sample']
+        isStr = name in ['Permalink', 'Comments', 'Custodian', 'Reference to full CDA sample', 'Certification']
         if name == 'Approval Status':
             doc['approval']  = lines[0].split(":")[1].strip()
         if name == 'Validation location':
-            link = lines[0][lines[0].index('(')+1 : lines[0].index(')')]
+            try:
+                if lines[0].startswith("CDA valid, no C-CDA rules exist"):
+                    link = None
+                    name = 'CDA valid, no C-CDA rules exist'
+                elif lines[0] == 'N/A':
+                    link = None
+                    name = 'N/A'
+                else:
+                    link = lines[0][lines[0].index('(')+1 : lines[0].index(')')]
+                    name = VALIDATOR_LOOKUP[link]
+            except:
+                ipdb.set_trace()
+
             doc['validator'] = {
                                 "link": link,
-                                "name": VALIDATOR_LOOKUP[link]
+                                "name": name
                                 }
         doc[name] = lines[0] if isStr else lines
 
@@ -66,19 +82,23 @@ def process_sections(sections):
     return doc
 
 
-def process_readme(section_name, example_name, data, example_xml, xml_filename):
+def process_readme(section_name, example_name, data, example_xml, xml_filename, path, readme_filename):
     sections = data.split('##')
     doc = process_sections(sections)
     doc['section'] = section_name
     doc['name'] = example_name
     doc['xml'] = example_xml
     doc['xml_filename'] = xml_filename
+    doc['updated_on'] = datetime.datetime.now()
     if 'Permalink' in doc:
-        result = db.examples.replace_one({"Permalink": doc['Permalink']}, doc, upsert=True)
+        db.examples.replace_one({"Permalink": doc['Permalink']}, doc, upsert=True)
         #   ipdb.set_trace()
     else:
         #   add permalink to readme
-        pass
+        permalink = generate_permalink(path, readme_filename)
+        doc['Permalink'] = permalink
+        print "creating new permalink {}".format(permalink)
+        db.examples.replace_one({"Permalink": doc['Permalink']}, doc, upsert=True)
         #   commit change to readme
 
         #   push change to GitHub repo
@@ -100,7 +120,7 @@ def parse(folder):
                     description = description.replace("##", "")
                     section_name = path.split(os.path.sep)[-1]
                     #   ipdb.set_trace()
-                    if section_name != 'C-CDA-Examples':
+                    if section_name not in  ['C-CDA-Examples', 'ccda_examples_repo']:
                         db.sections.replace_one(
                             {"name": section_name},
                             {
@@ -113,15 +133,50 @@ def parse(folder):
             #   actual example folder
             if filename.lower() == "readme.md" and dirs == []:
                 #   get the xml file for the example
-                xml_filename =  [ _file for _file in files if _file.lower() != "readme.md" ][0]
-                print os.path.join(path,filename)
-                pth = os.path.join(re.sub(folder, '', path), filename)
-                pth = pth.lstrip('/')
-                example_name = path.split(os.path.sep)[-1]
-                example_xml = ''
-                with open(os.path.join(path,xml_filename), 'rU') as xml:
-                    example_xml = xml.read()
+                xml_files =  [ _file for _file in files if _file.lower().endswith(".xml") ]
+                if len(xml_files) != 1:
+                    xml_filename = None
+                    example_xml = None
 
+                else:
+                    xml_filename = xml_files[0]
+                    print os.path.join(path,filename)
+                    pth = os.path.join(re.sub(folder, '', path), filename)
+                    pth = pth.lstrip('/')
+
+                    example_xml = ''
+                    with open(os.path.join(path,xml_filename), 'rU') as xml:
+                        example_xml = xml.read()
+
+                """
+                url_files =  [ _file for _file in files if _file.lower().endswith(".url") ]
+                if len(url_files) != 1:
+                    pass
+                else:
+                    url_filename = url_files[0]
+                    example_xml = ''
+                    with open(os.path.join(path,url_filename), 'rU') as urlfile:
+                        urldata = urlfile.read()
+                        lines = urldata.split("\n")
+                        lines = [ l for l in lines if l.startswith("URL")]
+                """
+                example_name = path.split(os.path.sep)[-1]
                 with open(os.path.join(path,filename), 'rU') as readme:
                     data = readme.read()
-                    process_readme(section_name, example_name, data, example_xml, xml_filename)
+                    #file_pth = os.path.join(path,filename)
+                    #ipdb.set_trace()
+                    #permalink_id = repo.git.hash_object(file_pth)
+                    process_readme(section_name, example_name, data, example_xml, xml_filename, path, filename)
+
+
+def generate_permalink(path, filename):
+    file_pth = os.path.join(os.getcwd(), path,filename)
+    #ipdb.set_trace()
+    git_blob_hash = repo.git.hash_object(file_pth)
+    with open( os.path.join(path,filename) , 'a+') as readme:
+        readme.write(add_permalink(git_blob_hash))
+
+    return git_blob_hash
+
+def add_permalink(id):
+    return "\n\n###Permalink \n\n* %s" %id
