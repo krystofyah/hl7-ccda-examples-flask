@@ -73,6 +73,9 @@ def download_example(permalink_id):
 
 @application.route('/search', methods=['GET', 'POST'])
 def get_search_results():
+    if request.method == 'GET':
+        return get_list_sections_page()
+
     query = {}
     #   ipdb.set_trace()
     params = dict(request.form)
@@ -82,19 +85,20 @@ def get_search_results():
     regx = re.compile(terms, re.IGNORECASE)
     #   ipdb.set_trace()
 
-    if 'search_terms' in params:
+    if 'search_terms' in params and params['search_terms'] != '':
         #query['name'] = {"$regex": '/*.{}*./i'.format(str(params['search_terms'][0]))}
         query['name'] = {"$regex": regx}
 
     if 'approval' in params:
-        query['approval'] = params['approval']
+        query['approval'] = {"$in": params['approval']}
 
-    if 'certification' in params and params['certification'] == 1:
-        query['certification'] = ''
+    if 'certification' in params and params['certification'][0] == '1':
+        query['Certification'] = 'ONC'
 
     #   ipdb.set_trace()
 
     examples = db.examples.find(query)
+    print params
     print query
     return render_template("search_results.html", examples=examples)
 
