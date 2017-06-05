@@ -19,6 +19,7 @@ from pygments import highlight
 from pygments.lexers import XmlLexer, guess_lexer
 from pygments.formatters import HtmlFormatter
 
+from sync import sync
 
 config = configparser.ConfigParser()
 config.read('app/config.ini')
@@ -103,6 +104,9 @@ def get_search_results():
     return render_template("search_results.html", examples=examples)
 
 
+@application.route('/sync', methods=['GET', 'POST'])
+def sync_from_github():
+    return jsonify(sync())
 
 import configparser
 
