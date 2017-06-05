@@ -1,7 +1,7 @@
 import os, ipdb, re, datetime
 
 #folder = '../C-CDA-Examples'
-folder = '.,/ccda_examples_repo'
+folder = '../ccda_examples_repo'
 
 import git
 repo = git.Repo(folder)
