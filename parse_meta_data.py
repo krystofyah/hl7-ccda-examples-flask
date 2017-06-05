@@ -1,4 +1,4 @@
-import os, ipdb, re, pandoc, datetime
+import os, ipdb, re, datetime
 
 folder = '../C-CDA-Examples'
 
