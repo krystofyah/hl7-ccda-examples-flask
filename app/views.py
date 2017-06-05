@@ -19,7 +19,7 @@ from pygments import highlight
 from pygments.lexers import XmlLexer, guess_lexer
 from pygments.formatters import HtmlFormatter
 
-from sync import sync
+from .sync import sync
 
 config = configparser.ConfigParser()
 config.read('app/config.ini')
