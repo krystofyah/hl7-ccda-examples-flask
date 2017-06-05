@@ -39,5 +39,6 @@ six==1.10.0
 traitlets==4.2.2
 wcwidth==0.1.7
 Werkzeug==0.11.10
-gitpython==2.0.0
-gitdb===0.6.1
+;gitpython==2.0.0
+;gitdb===0.6.1
+GitPython==2.1.3
