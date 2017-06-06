@@ -185,6 +185,7 @@ def parse(repo, folder):
         repo.git.add("-A")
         repo.git.commit(m="adding automagically generated permalink ids for new examples")
         repo.remotes.origin.push(refspec='master:master')
+        return should_commit
         #repo.git.push("origin", GIT_BRANCH)
         #ipdb.set_trace()
         #origin = repo.create_remote('origin', GIT_URL)
