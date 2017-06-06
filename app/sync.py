@@ -11,11 +11,8 @@ from db import GIT_URL, GIT_BRANCH
 
 def sync():
 
-    import git
-
-
     #   repo = git.Repo(folder)
-    repo =  Repo.clone_from(GIT_URL, "./ccda_examples_repo")
+    repo =  git.Repo.clone_from(GIT_URL, "./ccda_examples_repo")
 
 
     LOCAL_EXAMPLES_REPO_DIR = "./ccda_examples_repo"
