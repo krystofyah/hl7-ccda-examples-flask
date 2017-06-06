@@ -181,9 +181,11 @@ def parse(repo, folder):
         with repo.config_writer() as writer:
             writer.set_value("user", "name", "Chris Millet")
             writer.set_value("user", "email", "chris@thelazycompany.com")
+            git remote set-url origin git@github.com:username/repo.git
         repo.git.add("-A")
         repo.git.commit(m="adding automagically generated permalink ids for new examples")
-        repo.git.push("origin", GIT_BRANCH)
+        #repo.git.push("origin", GIT_BRANCH)
+        repo.remotes.origin.push()
 
 def generate_permalink(repo, path, filename):
     file_pth = os.path.join(os.getcwd(), path,filename)
