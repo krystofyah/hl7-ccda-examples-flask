@@ -178,8 +178,9 @@ def parse(repo, folder):
         reader = repo.config_reader()
         #repo.git.config(user_name="hl7bot")
         #repo.git.config(user_email='donotreply@hl7.org')
-        reader.set_value("user", "name", "hl7bot")
-        reader.set_value("user", "email", "bot@hl7.org")
+        with repo.config_writer() as writer:
+            writer.set_value("user", "name", "hl7bot")
+            writer.set_value("user", "email", "bot@hl7.org")
         repo.git.add("-A")
         repo.git.commit(m="adding automagically generated permalink ids for new examples")
         repo.git.push("origin", GIT_BRANCH)
