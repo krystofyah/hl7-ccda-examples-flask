@@ -185,7 +185,7 @@ def parse(repo, folder):
         repo.git.add("-A")
         repo.git.commit(m="adding automagically generated permalink ids for new examples")
         #repo.git.push("origin", GIT_BRANCH)
-        origin = empty_repo.create_remote('origin', GIT_URL)
+        origin = repo.create_remote('origin', GIT_URL)
         origin.push()#repo.remotes.origin.push(refspec='master:master')
 
 def generate_permalink(repo, path, filename):
