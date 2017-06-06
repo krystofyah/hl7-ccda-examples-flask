@@ -179,8 +179,8 @@ def parse(repo, folder):
         #repo.git.config(user_name="hl7bot")
         #repo.git.config(user_email='donotreply@hl7.org')
         with repo.config_writer() as writer:
-            writer.set_value("user", "name", "hl7bot")
-            writer.set_value("user", "email", "bot@hl7.org")
+            writer.set_value("user", "name", "Chris Millet")
+            writer.set_value("user", "email", "chris@thelazycompany.com")
         repo.git.add("-A")
         repo.git.commit(m="adding automagically generated permalink ids for new examples")
         repo.git.push("origin", GIT_BRANCH)
