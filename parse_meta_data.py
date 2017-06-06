@@ -179,18 +179,19 @@ def parse(repo, folder):
         #repo.git.config(user_name="hl7bot")
         #repo.git.config(user_email='donotreply@hl7.org')
         with repo.config_writer() as writer:
-            writer.set_value("user", "name", "hl7deployer")
-            writer.set_value("user", "email", "chris+hl7@thelazycompany.com")
+            writer.set_value("user", "name", "Chris Millet")
+            writer.set_value("user", "email", "chris@thelazycompany.com")
 
         repo.git.add("-A")
         repo.git.commit(m="adding automagically generated permalink ids for new examples")
+        repo.remotes.origin.push(refspec='master:master')
         #repo.git.push("origin", GIT_BRANCH)
         #ipdb.set_trace()
         #origin = repo.create_remote('origin', GIT_URL)
         #origin.push()
-        ssh_cmd = 'ssh -i {}'.format(GIT_SSH_KEY)
-        with repo.git.custom_environment(GIT_SSH_COMMAND=ssh_cmd):
-            repo.remotes.origin.push(refspec='master:master')
+        #ssh_cmd = 'ssh -i {}'.format(GIT_SSH_KEY)
+        #with repo.git.custom_environment(GIT_SSH_COMMAND=ssh_cmd):
+            #repo.remotes.origin.push(refspec='master:master')
 
 def generate_permalink(repo, path, filename):
     file_pth = os.path.join(os.getcwd(), path,filename)
