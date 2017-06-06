@@ -92,7 +92,7 @@
                 <strong id="example-full">Full sample:</strong>
                  {{example['Reference to full CDA sample']}}
               </p>
-              {% if not example['example_xml'] %}
+              {% if example['xml'] == None %}
                   <p>
                     <strong id="example-example">Example:</strong>
                     no example provided

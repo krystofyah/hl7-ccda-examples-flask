@@ -1,15 +1,14 @@
 import os, ipdb, re, datetime
+from git import Repo
 
 folder = '../C-CDA-Examples'
 #folder = '../ccda_examples_repo'
 
-import git
-#   repo = git.Repo(folder)
 VALIDATOR_LOOKUP = {
     "https://sitenv.org/c-cda-validator": "SITE C-CDA Validator"
 }
 
-from app.db import db
+from app.db import db, GIT_BRANCH
 
 def get_name(section):
     lines = section.split("\n\n")
@@ -83,7 +82,7 @@ def process_sections(sections):
     return doc
 
 
-def process_readme(section_name, example_name, data, example_xml, xml_filename, path, readme_filename):
+def process_readme(repo, section_name, example_name, data, example_xml, xml_filename, path, readme_filename):
     sections = data.split('##')
     doc = process_sections(sections)
     doc['section'] = section_name
@@ -91,22 +90,25 @@ def process_readme(section_name, example_name, data, example_xml, xml_filename, 
     doc['xml'] = example_xml
     doc['xml_filename'] = xml_filename
     doc['updated_on'] = datetime.datetime.now()
+    should_commit = False
     if 'Permalink' in doc:
         db.examples.replace_one({"Permalink": doc['Permalink']}, doc, upsert=True)
         #   ipdb.set_trace()
     else:
         #   add permalink to readme
-        permalink = generate_permalink(path, readme_filename)
+        permalink = generate_permalink(repo, path, readme_filename)
         doc['Permalink'] = permalink
         print "creating new permalink {}".format(permalink)
         db.examples.replace_one({"Permalink": doc['Permalink']}, doc, upsert=True)
         #   commit change to readme
-
+        should_commit = True
         #   push change to GitHub repo
 
+    return should_commit
 
 #   loop through each section folder
-def parse(folder):
+def parse(repo, folder):
+    should_commit = False
     for path,dirs,files in os.walk(folder):
         #   print "path: {} dir: {} "
         dirs[:] = [d for d in dirs if not d[0] == '.']
@@ -167,10 +169,17 @@ def parse(folder):
                     #file_pth = os.path.join(path,filename)
                     #ipdb.set_trace()
                     #permalink_id = repo.git.hash_object(file_pth)
-                    process_readme(section_name, example_name, data, example_xml, xml_filename, path, filename)
+                    commit_new_id = process_readme(repo, section_name, example_name, data, example_xml, xml_filename, path, filename)
 
+                    if commit_new_id:
+                        should_commit = True
+    if should_commit:
+        print "updating repo"
+        repo.git.add("-A")
+        repo.git.commit(m="adding automagically generated permalink ids for new examples")
+        repo.git.push("origin", GIT_BRANCH)
 
-def generate_permalink(path, filename):
+def generate_permalink(repo, path, filename):
     file_pth = os.path.join(os.getcwd(), path,filename)
     #ipdb.set_trace()
     git_blob_hash = repo.git.hash_object(file_pth)

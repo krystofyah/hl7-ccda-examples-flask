@@ -6,16 +6,24 @@ import ipdb
 import git
 import shutil
 from parse_meta_data import parse
+from db import GIT_URL, GIT_BRANCH
 
 
 def sync():
+
+    import git
+
+
+    #   repo = git.Repo(folder)
+    repo =  Repo.clone_from(GIT_URL, "./ccda_examples_repo")
+
+
     LOCAL_EXAMPLES_REPO_DIR = "./ccda_examples_repo"
-    BRANCH = 'permalinksHashObject'
 
     shutil.rmtree(LOCAL_EXAMPLES_REPO_DIR)
-    repo = git.Repo.clone_from("https://github.com/schmoney/C-CDA-Examples.git", LOCAL_EXAMPLES_REPO_DIR)
-    repo.git.pull("origin", BRANCH)
-    parse(LOCAL_EXAMPLES_REPO_DIR)
+    repo = git.Repo.clone_from(GIT_URL, LOCAL_EXAMPLES_REPO_DIR)
+    repo.git.pull("origin", GIT_BRANCH)
+    parse(repo, LOCAL_EXAMPLES_REPO_DIR)
     basedir = os.path.abspath(os.path.dirname(__file__))
 
     sections = db.sections.find().count()
