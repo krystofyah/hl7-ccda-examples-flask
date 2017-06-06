@@ -20,6 +20,7 @@ def sync():
     shutil.rmtree(LOCAL_EXAMPLES_REPO_DIR)
     repo = git.Repo.clone_from(GIT_URL, LOCAL_EXAMPLES_REPO_DIR)
     repo.git.pull("origin", GIT_BRANCH)
+    repo.git.fetch()
     parse(repo, LOCAL_EXAMPLES_REPO_DIR)
     basedir = os.path.abspath(os.path.dirname(__file__))
 
