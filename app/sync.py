@@ -18,8 +18,6 @@ def sync():
     if os.path.isdir(LOCAL_EXAMPLES_REPO_DIR):
         shutil.rmtree(LOCAL_EXAMPLES_REPO_DIR)
 
-    repo =  git.Repo.clone_from(GIT_URL, LOCAL_EXAMPLES_REPO_DIR)
-
     repo = git.Repo.clone_from(GIT_URL, LOCAL_EXAMPLES_REPO_DIR)
     repo.git.pull("origin", GIT_BRANCH)
     should_delete = parse(repo, LOCAL_EXAMPLES_REPO_DIR)
