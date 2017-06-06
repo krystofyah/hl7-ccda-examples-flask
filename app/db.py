@@ -11,6 +11,7 @@ if os.environ.get("HEROKU"):
     client = MongoClient(uri)
     GIT_URL = os.environ.get("GIT_URL")
     GIT_BRANCH = os.environ.get("GIT_BRANCH")
+    GIT_SSH_KEY = os.environ.get("GIT_SSH_KEY")
 else:
     #database = 'ccdaExamples'
     #client = MongoClient('localhost', 27017)
@@ -19,5 +20,6 @@ else:
     GIT_URL = "https://github.com/schmoney/C-CDA-Examples.git"
     #GIT_BRANCH = 'permalinksHashObject'
     GIT_BRANCH = 'master'
+    GIT_SSH_KEY = ''
 
 db = client[database]
