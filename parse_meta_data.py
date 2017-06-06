@@ -8,7 +8,7 @@ VALIDATOR_LOOKUP = {
     "https://sitenv.org/c-cda-validator": "SITE C-CDA Validator"
 }
 
-from app.db import db, GIT_BRANCH
+from app.db import db, GIT_BRANCH, GIT_URL
 
 def get_name(section):
     lines = section.split("\n\n")
@@ -185,7 +185,8 @@ def parse(repo, folder):
         repo.git.add("-A")
         repo.git.commit(m="adding automagically generated permalink ids for new examples")
         #repo.git.push("origin", GIT_BRANCH)
-        repo.remotes.origin.push(refspec='master:master')
+        origin = empty_repo.create_remote('origin', GIT_URL)
+        origin.push()#repo.remotes.origin.push(refspec='master:master')
 
 def generate_permalink(repo, path, filename):
     file_pth = os.path.join(os.getcwd(), path,filename)
