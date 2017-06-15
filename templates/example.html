@@ -78,7 +78,15 @@
               </p>
               <div class="large-10 large-offset-1 columns">
                 <ul>
-              <li>{{example['Comments']}}</li>
+
+
+              <li>
+                {% if example['xml'] != None %}
+                      {{example['Comments']}}
+                {% else %}
+                    {{example['google_sheets_url']|safe}}
+                {% endif %}
+              </li>
               </ul>
 
               </div>

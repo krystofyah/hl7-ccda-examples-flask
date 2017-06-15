@@ -1,4 +1,4 @@
-import os, ipdb, re, datetime
+import os, ipdb, re, datetime, markdown2
 from git import Repo
 
 folder = '../C-CDA-Examples'
@@ -26,18 +26,20 @@ def get_name(section):
 
 
 def process_section(doc, name, section):
-    #name_criteria = name if name == 'Approval Status' else "#{}".format(name)
     if section.startswith(name): # not clear what this section maps to in the front end
+
         lines = section.split("\n")
         #   ipdb.set_trace()
         lines = [ l.replace('* ', '') for l in lines if l.startswith("*") ]
         #   get rid of remaining #
-        name = name[1:] if name.startswith("#") else name
+        name = name.strip()[1:] if name.startswith("#") else name.strip()
         # make name safe for mongo
         name = name.replace(".", ' ')
 
         #   update Permalink field to just be the id, otherwise list of bulleted items
         isStr = name in ['Permalink', 'Comments', 'Custodian', 'Reference to full CDA sample', 'Certification']
+
+
         if name == 'Approval Status':
             doc['approval']  = lines[0].split(":")[1].strip()
         if name == 'Validation location':
@@ -89,6 +91,10 @@ def process_readme(repo, section_name, example_name, data, example_xml, xml_file
     doc['name'] = example_name
     doc['xml'] = example_xml
     doc['xml_filename'] = xml_filename
+    #   if no xml, then assume it's just a comment that links to the google doc
+    if example_xml is None:
+        #   convert markdown to html with link to google doc
+        doc['google_sheets_url'] = markdown2.markdown(doc['Comments'])
     doc['updated_on'] = datetime.datetime.now()
     should_commit = False
     if 'Permalink' in doc:

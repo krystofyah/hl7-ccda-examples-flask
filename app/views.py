@@ -46,7 +46,7 @@ def get_list_sections_page():
 @application.route('/sections/<section_id>', methods=['GET', 'POST'])
 def get_section_page(section_id):
     section = db.sections.find_one({"_id": ObjectId(section_id)})
-    examples = db.examples.find({"section": section['name']})
+    examples = db.examples.find({"section": section['name']}).sort("name", 1)
     #   return render_template("orig.html", examples=examples)
     return render_template("examples.html", section=section, examples=examples)
 
